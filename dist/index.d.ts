@@ -1696,12 +1696,12 @@ declare class ComponentsView extends View {
 export type ClbObj = ReturnType<ComponentView["_clbObj"]>;
 export interface IComponentView extends ExtractMethods<ComponentView> {
 }
-export declare class ComponentView extends View</**
+export declare class ComponentView<TComp extends Component = Component> extends View</**
  * Keep this format to avoid errors in TS bundler */ 
 /** @ts-ignore */
-Component> {
+TComp> {
 	/** @ts-ignore */
-	model: Component;
+	model: TComp;
 	/** @ts-ignore */
 	className(): any;
 	/** @ts-ignore */
@@ -1726,7 +1726,7 @@ Component> {
 	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
 	_clbObj(): {
 		editor: Editor;
-		model: Component;
+		model: TComp;
 		el: HTMLElement;
 	};
 	/**
@@ -1935,7 +1935,7 @@ export declare class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
 	defaults(): T;
 	get type(): "" | T["type"];
 	get component(): Component | undefined;
-	get componentView(): ComponentView | undefined;
+	get componentView(): ComponentView<Component> | undefined;
 	get el(): HTMLElement | undefined;
 	/**
 	 * Get the box rect of the spot.
@@ -3300,7 +3300,7 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 export interface ComponentStackItem {
 	id: string;
 	model: typeof Component;
-	view: typeof ComponentView;
+	view: typeof ComponentView<any>;
 }
 /**
  * Delegate commands to other components.
@@ -4425,8 +4425,8 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @param {Frame} frame Get View of a specific frame
 	 * @return {ComponentView}
 	 */
-	getView(frame?: Frame): ComponentView | undefined;
-	getCurrentView(): ComponentView | undefined;
+	getView(frame?: Frame): ComponentView<Component> | undefined;
+	getCurrentView(): ComponentView<Component> | undefined;
 	__getScriptProps(): Partial<ComponentProperties>;
 	/**
 	 * Return script in string format, cleans 'function() {..' from scripts
@@ -9071,10 +9071,8 @@ declare class ItemView extends View {
 	clsEdit: string;
 	clsNoEdit: string;
 	_rendered?: boolean;
-	eyeEl?: JQuery<HTMLElement>;
 	caret?: JQuery<HTMLElement>;
 	inputName?: HTMLElement;
-	cnt?: HTMLElement;
 	constructor(opt: ItemViewProps);
 	initComponent(): void;
 	updateName(): void;
@@ -9137,6 +9135,7 @@ declare class ItemView extends View {
 	 * @param	Event
 	 * */
 	updateStatus(): void;
+	getItemContainer(): JQuery<HTMLElement>;
 	/**
 	 * Update item aspect after children changes
 	 *
@@ -9144,7 +9143,7 @@ declare class ItemView extends View {
 	 * */
 	checkChildren(): void;
 	getCaret(): JQuery<HTMLElement>;
-	setRoot(el: Component | string): void;
+	setRoot(cmp: Component | string): void;
 	updateLayerable(): void;
 	__clearItems(): void;
 	remove(...args: [
@@ -10243,13 +10242,15 @@ declare class UtilsModule extends Module {
 			[x: string]: any;
 		};
 		isComponent: (obj: any) => obj is Component;
-		getComponentView: (el?: Node | undefined) => ComponentView | undefined;
+		getComponentView: (el?: Node | undefined) => ComponentView<Component> | undefined;
 		getComponentModel: (el?: Node | undefined) => Component | undefined;
 		buildBase64UrlFromSvg: (svg: string) => string;
 		hasDnd: (em: EditorModel) => boolean;
 		upFirst: (value: string) => string;
 		matches: any;
-		getModel: (el: any, $?: any) => Component | undefined;
+		getModel: (el: HTMLElement & {
+			__cashData?: any;
+		}, $?: any) => Component | undefined;
 		camelCase: (value: string) => string;
 		getElement: (el: HTMLElement) => any;
 		shallowDiff: (objOrig: ObjectAny, objNew: ObjectAny) => ObjectAny;
@@ -11073,7 +11074,7 @@ declare class RichTextEditorModule extends Module<RichTextEditorConfig & {
 	 * @param {Object} rte The instance of already defined RTE
 	 * @private
 	 * */
-	disable(view: ComponentView, rte?: RichTextEditor, opts?: DisableOptions): void;
+	disable(view: ComponentView, rte?: RichTextEditor, opts?: DisableOptions): boolean;
 }
 export type CommandEvent = "run" | "stop" | `run:${string}` | `stop:${string}` | `abort:${string}`;
 declare class CommandsModule extends Module<CommandsConfig & {

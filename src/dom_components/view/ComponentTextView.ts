@@ -113,10 +113,11 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
     // There are rare cases when disableEditing is called when the view is already removed
     // so, we have to check for the model, this will avoid breaking stuff.
     const editable = model && model.get('editable');
+    let disabled = false;
 
     if (rte) {
       try {
-        await rte.disable(this, activeRte, opts);
+        disabled = rte.disable(this, activeRte, opts);
       } catch (err) {
         em.logError(err as any);
       }
@@ -127,7 +128,9 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
       }
     }
 
-    this.toggleEvents();
+    if (disabled) {
+      this.toggleEvents();
+    }
   }
 
   /**

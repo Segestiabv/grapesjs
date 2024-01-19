@@ -398,18 +398,17 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * @param {Object} rte The instance of already defined RTE
    * @private
    * */
-  disable(view: ComponentView, rte?: RichTextEditor, opts: DisableOptions = {}) {
+  disable(view: ComponentView, rte?: RichTextEditor, opts: DisableOptions = {}) : boolean {
     const { em } = this;
     const customRte = this.customRte;
     // @ts-ignore
     const el = view.getChildrenContainer();
 
     if (customRte) {
-      customRte.disable(el, rte);
+      if (!customRte.disable(el, rte)) return false;
     } else {
       rte && rte.disable();
     }
-
     this.hideToolbar();
 
     if (em) {
@@ -418,5 +417,6 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     }
 
     this.model.unset('currentView');
+    return true;
   }
 }
