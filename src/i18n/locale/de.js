@@ -1,11 +1,11 @@
-const traitInputAttr = { placeholder: 'z.B. Text hier' }
+const traitInputAttr = { placeholder: 'z.B. Text hier' };
 
 export default {
   assetManager: {
     addButton: 'Bild hinzufügen',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Bild auswählen',
-    uploadTitle: 'Dateien hier ablegen oder zum Hochladen anklicken'
+    uploadTitle: 'Dateien hier ablegen oder zum Hochladen anklicken',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Kategorie Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -29,21 +29,21 @@ export default {
       link: 'Link',
       map: 'Karte',
       tfoot: 'Tabellenfuß',
-      tbody: 'Tabellenkörßer',
+      tbody: 'Tabellenkörper',
       thead: 'Tabellenkopf',
       table: 'Tabelle',
       row: 'Tabellenzeile',
-      cell: 'Tabellenzelle'
-    }
+      cell: 'Tabellenzelle',
+    },
   },
   deviceManager: {
     device: 'Gerät',
     devices: {
       desktop: 'Desktop',
       tablet: 'Tablet',
-      mobileLandscape: 'Mobile horizontal',
-      mobilePortrait: 'Mobile vertikal'
-    }
+      mobileLandscape: 'Mobil Landschaft',
+      mobilePortrait: 'Mobil Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Style Manager öffnen',
         'open-tm': 'Einstellungen',
         'open-layers': 'Ebenen öffnen',
-        'open-blocks': 'Blöcke öffnen'
-      }
-    }
+        'open-blocks': 'Blöcke öffnen',
+      },
+    },
   },
   selectorManager: {
     label: 'Klassen',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Even/Odd'
-    }
+      'nth-of-type(2n)': 'Even/Odd',
+    },
   },
   styleManager: {
     empty: 'Wählen Sie ein Element aus, bevor Sie den Style Manager verwenden',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Dekorationen',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Größen'
+      dimension: 'Größen',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -110,7 +110,7 @@ export default {
       'padding-left-sub': 'Links',
       'border-width-sub': 'Breite',
       'border-style-sub': 'Stil',
-      'border-color-sub': 'Rarbe',
+      'border-color-sub': 'Farbe',
       'border-top-left-radius-sub': 'Oben links',
       'border-top-right-radius-sub': 'Oben rechts',
       'border-bottom-right-radius-sub': 'Unten rechts',
@@ -148,7 +148,7 @@ export default {
       'box-shadow': 'Boxschatten',
       'box-shadow-h': 'X',
       'box-shadow-v': 'Y',
-      'box-shadow-blur': 'Unschärge',
+      'box-shadow-blur': 'Unschärfe',
       'box-shadow-spread': 'Verteilung',
       'box-shadow-color': 'Farbe',
       'box-shadow-type': 'Typ',
@@ -188,8 +188,8 @@ export default {
       'flex-basis': 'Flex Basis',
       'flex-grow': 'Flex Wachsen',
       'flex-shrink': 'Flex Schrumpfen',
-      'align-self': 'Eigene Ausrichtung'
-    }
+      'align-self': 'Eigene Ausrichtung',
+    },
   },
   traitManager: {
     empty: 'Wählen Sie ein Element aus, bevor Sie den Eigenschaftsmanager verwenden',
@@ -200,25 +200,25 @@ export default {
         id: 'ID',
         alt: 'Alternativtext',
         title: 'Titel',
-        href: 'Link'
+        href: 'Link',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'z.B. https://google.com' }
+        href: { placeholder: 'z.B. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Dieses Fenster',
-          _blank: 'Neues Fenster'
-        }
-      }
-    }
+          _blank: 'Neues Fenster',
+        },
+      },
+    },
   },
   storageManager: {
-    recover: 'Möchten Sie ungespeicherte Änderungen wiederherstellen?'
-  }
-}
+    recover: 'Möchten Sie ungespeicherte Änderungen wiederherstellen?',
+  },
+};

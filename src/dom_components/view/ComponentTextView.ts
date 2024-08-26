@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { DisableOptions, ObjectAny } from '../../common';
+import { AddOptions, DisableOptions, ObjectAny } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { off, on } from '../../utils/dom';
@@ -10,7 +10,7 @@ import ComponentText from '../model/ComponentText';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
 
-export default class ComponentTextView extends ComponentView<ComponentText> {
+export default class ComponentTextView<TComp extends ComponentText = ComponentText> extends ComponentView<TComp> {
   rte?: RichTextEditorModule;
   rteEnabled?: boolean;
   activeRte?: RichTextEditor;
@@ -174,7 +174,7 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
     }
   }
 
-  insertComponent(content: ComponentDefinition, opts = {}) {
+  insertComponent(content: ComponentDefinition, opts: AddOptions & { useDomContent?: boolean } = {}) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -188,10 +188,10 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
 
       if (textModel && textModel.is?.('textnode')) {
         const cmps = textModel.collection;
-        cmps.forEach(cmp => {
+        cmps.forEach((cmp) => {
           if (cmp === textModel) {
             const type = 'textnode';
-            const cnt = cmp.content;
+            const cnt = opts.useDomContent ? textNode.textContent || '' : cmp.content;
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });

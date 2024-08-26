@@ -1,14 +1,16 @@
 import { isArray, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash } from '../../common';
+import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
 
 export type StyleProps = Record<string, string | string[]>;
 
-export type UpdateStyleOptions = ObjectAny & {
+export type UpdateStyleOptions = SetOptions & {
   partial?: boolean;
   addStyle?: StyleProps;
+  inline?: boolean;
+  noEvent?: boolean;
 };
 
 const parserHtml = ParserHtml();
@@ -70,7 +72,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     const propNew = { ...prop };
     const newStyle = { ...propNew };
     // Remove empty style properties
-    keys(newStyle).forEach(prop => {
+    keys(newStyle).forEach((prop) => {
       if (newStyle[prop] === '') {
         delete newStyle[prop];
       }
@@ -79,7 +81,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     const diff = shallowDiff(propOrig, propNew);
     // Delete the property used for partial updates
     delete diff.__p;
-    keys(diff).forEach(pr => {
+    keys(diff).forEach((pr) => {
       // @ts-ignore
       const { em } = this;
       if (opts.noEvent) return;

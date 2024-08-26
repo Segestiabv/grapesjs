@@ -25,6 +25,19 @@ type CallbackOptions = {
   resizer: Resizer;
 };
 
+interface ResizerUpdateTargetOptions {
+  store: boolean;
+  selectedHandler?: string;
+  resizer: Resizer;
+  config: ResizerOptions;
+}
+
+interface ResizerOnUpdateContainerOptions {
+  el: HTMLElement;
+  resizer: Resizer;
+  opts: ResizerOptions;
+}
+
 export interface ResizerOptions {
   /**
    * Function which returns custom X and Y coordinates of the mouse.
@@ -34,12 +47,12 @@ export interface ResizerOptions {
   /**
    * Indicates custom target updating strategy.
    */
-  updateTarget?: (el: HTMLElement, rect: RectDim, opts: any) => void;
+  updateTarget?: (el: HTMLElement, rect: RectDim, opts: ResizerUpdateTargetOptions) => void;
 
   /**
    * Function which gets HTMLElement as an arg and returns it relative position
    */
-  posFetcher?: (el: HTMLElement, opts: any) => BoundingRect;
+  posFetcher?: (el: HTMLElement, opts: ElementPosOpts) => BoundingRect;
 
   /**
    * Indicate if the resizer should keep the default ratio.
@@ -65,7 +78,7 @@ export interface ResizerOptions {
   /**
    * On container update callback.
    */
-  onUpdateContainer?: (opts: any) => void;
+  onUpdateContainer?: (opts: ResizerOnUpdateContainerOptions) => void;
 
   /**
    * Resize unit step.
@@ -338,7 +351,7 @@ export default class Resizer {
     const handlers: Handlers = {};
     ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(
       // @ts-ignore
-      hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : null)
+      (hdl) => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : null),
     );
 
     for (let n in handlers) {
@@ -363,7 +376,7 @@ export default class Resizer {
   toggleFrames(silent?: boolean) {
     if (this.opts.silentFrames) {
       const frames = document.querySelectorAll('iframe');
-      each(frames, frame => (frame.style.pointerEvents = silent ? 'none' : ''));
+      each(frames, (frame) => (frame.style.pointerEvents = silent ? 'none' : ''));
     }
   }
 

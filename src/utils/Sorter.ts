@@ -155,9 +155,10 @@ export default class Sorter extends View {
     this.canvasRelative = !!o.canvasRelative;
     this.selectOnEnd = !o.avoidSelectOnEnd;
     this.scale = o.scale;
+    const { em } = this;
 
-    if (this.em && this.em.on) {
-      this.em.on('change:canvasOffset', this.updateOffset);
+    if (em?.on) {
+      em.on(em.Canvas.events.refresh, this.updateOffset);
       this.updateOffset();
     }
   }
@@ -499,7 +500,7 @@ export default class Sorter extends View {
     if (model?.set) {
       const cv = this.em!.Canvas;
       const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
-      [Select, Hover, Spacing].forEach(type => cv.removeSpots({ type }));
+      [Select, Hover, Spacing].forEach((type) => cv.removeSpots({ type }));
       cv.addSpot({ ...spotTarget, component: model as any });
       model.set('status', 'selected-parent');
       this.targetModel = model;
@@ -673,11 +674,12 @@ export default class Sorter extends View {
    * @return {Boolean}
    */
   validTarget(trg: HTMLElement, src?: HTMLElement) {
+    const pos = this.lastPos;
     const trgModel = this.getTargetModel(trg);
     const srcModel = this.getSourceModel(src, { target: trgModel });
     // @ts-ignore
-    src = srcModel && srcModel.view && srcModel.view.el;
-    trg = trgModel && trgModel.view && trgModel.view.el;
+    src = srcModel?.view?.el;
+    trg = trgModel?.view?.el;
     let result = {
       valid: true,
       src,
@@ -695,10 +697,12 @@ export default class Sorter extends View {
       return result;
     }
 
+    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : trgModel.components().length;
+
     // Check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     if (isFunction(draggable)) {
-      const res = draggable(srcModel, trgModel);
+      const res = draggable(srcModel, trgModel, index);
       result.dragInfo = res;
       result.draggable = res;
       draggable = res;
@@ -712,7 +716,7 @@ export default class Sorter extends View {
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
     if (isFunction(droppable)) {
-      const res = droppable(srcModel, trgModel);
+      const res = droppable(srcModel, trgModel, index);
       result.droppable = res;
       result.dropInfo = res;
       droppable = res;
@@ -1097,9 +1101,13 @@ export default class Sorter extends View {
         const offset = trgDim.offsets || {};
         const pT = offset.paddingTop || margI;
         const pL = offset.paddingLeft || margI;
-        t = trgDim.top + pT;
-        l = trgDim.left + pL;
-        w = parseInt(`${trgDim.width}`) - pL * 2 + un;
+        const bT = offset.borderTopWidth || 0;
+        const bL = offset.borderLeftWidth || 0;
+        const bR = offset.borderRightWidth || 0;
+        const bWidth = bL + bR;
+        t = trgDim.top + pT + bT;
+        l = trgDim.left + pL + bL;
+        w = parseInt(`${trgDim.width}`) - pL * 2 - bWidth + un;
         h = 'auto';
       }
     }
@@ -1174,7 +1182,7 @@ export default class Sorter extends View {
       } else {
         toMoveArr
           // add the model's parents
-          .map(model => ({
+          .map((model) => ({
             model,
             parents: this.parents(model),
           }))
@@ -1192,7 +1200,7 @@ export default class Sorter extends View {
                 ...lastPos!,
                 indexEl: lastPos!.indexEl - domPositionOffset,
                 index: lastPos!.index - domPositionOffset,
-              })
+              }),
             );
             // when the element is dragged to the same parent and after its position
             //  it will be removed from the children list
@@ -1230,7 +1238,7 @@ export default class Sorter extends View {
         // @ts-ignore
         index: srcModel && srcModel.index(),
       };
-      moved.length ? moved.forEach(m => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
+      moved.length ? moved.forEach((m) => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
     }
 
     isFunction(onEnd) && onEnd({ sorter: this });

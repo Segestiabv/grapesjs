@@ -45,7 +45,7 @@ component.get('tagName');
 *   `layerable` **[Boolean][3]?** Set to `false` if you need to hide the component inside Layers. Default: `true`
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
-*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. Default: `false`
+*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
 *   `style` **[Object][2]?** Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
 *   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
@@ -128,6 +128,28 @@ Get the drag mode of the component.
 
 Returns **[String][1]** Drag mode value, options: `'absolute'` | `'translate'` | `''`
 
+## setSymbolOverride
+
+Set symbol override.
+By setting override to `true`, none of its property changes will be propagated to relative symbols.
+By setting override to specific properties, changes of those properties will be skipped from propagation.
+
+### Parameters
+
+*   `value` **([Boolean][3] | [String][1] | [Array][5]<[String][1]>)** 
+
+### Examples
+
+```javascript
+component.setSymbolOverride(['children', 'classes']);
+```
+
+## getSymbolOverride
+
+Get symbol override value.
+
+Returns **([Boolean][3] | [Array][5]<[String][1]>)** 
+
 ## find
 
 Find inner components by query string.
@@ -164,6 +186,24 @@ console.log(allImages[0]) // prints the first found component
 ```
 
 Returns **[Array][5]\<Component>** 
+
+## findFirstType
+
+Find the first inner component by component type.
+If no component is found, it returns `undefined`.
+
+### Parameters
+
+*   `type` **[String][1]** Component type
+
+### Examples
+
+```javascript
+const image = component.findFirstType('image');
+if (image) console.log(image)
+```
+
+Returns **Component** Found component, otherwise `undefined`
 
 ## closest
 
@@ -238,7 +278,7 @@ Update attributes of the component
 ### Parameters
 
 *   `attrs` **[Object][2]** Key value attributes
-*   `opts` **SetOptions**  (optional, default `{}`)
+*   `opts` **SetAttrOptions**  (optional, default `{}`)
 *   `options` **[Object][2]** Options for the model update
 
 ### Examples
@@ -256,7 +296,7 @@ Add attributes to the component
 ### Parameters
 
 *   `attrs` **[Object][2]** Key value attributes
-*   `opts` **SetOptions**  (optional, default `{}`)
+*   `opts` **SetAttrOptions**  (optional, default `{}`)
 *   `options` **[Object][2]** Options for the model update
 
 ### Examples
@@ -304,7 +344,7 @@ Set the style on the component
 ### Parameters
 
 *   `prop` **[Object][2]** Key value style object (optional, default `{}`)
-*   `opts` **any**  (optional, default `{}`)
+*   `opts` **UpdateStyleOptions**  (optional, default `{}`)
 
 ### Examples
 
@@ -859,7 +899,7 @@ Returns **[Boolean][3]**
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js
+[6]: https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.ts
 
 [7]: /modules/Components-js.html
 

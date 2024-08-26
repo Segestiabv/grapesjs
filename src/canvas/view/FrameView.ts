@@ -3,6 +3,8 @@ import { ModuleView } from '../../abstract';
 import { BoxRect, ObjectAny } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView';
+import ComponentView from '../../dom_components/view/ComponentView';
+import { type as typeHead } from '../../dom_components/model/ComponentHead';
 import Droppable from '../../utils/Droppable';
 import {
   append,
@@ -40,6 +42,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   private jsContainer?: HTMLElement;
   private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: ComponentWrapperView;
+  private headView?: ComponentView;
   private frameWrapView?: FrameWrapView;
 
   constructor(model: Frame, view?: FrameWrapView) {
@@ -96,18 +99,18 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     const attrStr = (attr: any = {}) =>
       Object.keys(attr)
         .sort()
-        .map(i => `[${i}="${attr[i]}"]`)
+        .map((i) => `[${i}="${attr[i]}"]`)
         .join('');
     const find = (items: any[], stack: any[], res: any[]) => {
-      items.forEach(item => {
+      items.forEach((item) => {
         const { tag, attributes } = item;
-        const has = stack.some(s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes));
+        const has = stack.some((s) => s.tag === tag && attrStr(s.attributes) === attrStr(attributes));
         !has && res.push(item);
       });
     };
     find(current, prev, toAdd);
     find(prev, current, toRemove);
-    toRemove.forEach(stl => {
+    toRemove.forEach((stl) => {
       const el = headEl.querySelector(`${stl.tag}${attrStr(stl.attributes)}`);
       el?.parentNode?.removeChild(el);
     });
@@ -119,7 +122,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   getCanvasModel(): Canvas {
-    return this.em.Canvas.getModel();
+    return this?.em.Canvas?.getModel();
   }
 
   getWindow() {
@@ -333,6 +336,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       evOpts.window = this.getWindow();
       em?.trigger(`${evLoad}:before`, evOpts); // deprecated
       em?.trigger(CanvasEvents.frameLoad, evOpts);
+      this.renderHead();
       appendScript([...canvas.get('scripts')]);
     };
   }
@@ -340,8 +344,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   renderStyles(opts: any = {}) {
     const head = this.getHead();
     const canvas = this.getCanvasModel();
-    const normalize = (stls: any[]) =>
-      stls.map(href => ({
+    const normalize = (stls: any[] = []) =>
+      stls.map((href) => ({
         tag: 'link',
         attributes: {
           rel: 'stylesheet',
@@ -349,23 +353,38 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         },
       }));
     const prevStyles = normalize(opts.prev || canvas.previous('styles'));
-    const styles = normalize(canvas.get('styles'));
+    const styles = normalize(canvas?.get('styles'));
     const toRemove: any[] = [];
     const toAdd: any[] = [];
     const find = (items: any[], stack: any[], res: any[]) => {
-      items.forEach(item => {
+      items.forEach((item) => {
         const { href } = item.attributes;
-        const has = stack.some(s => s.attributes.href === href);
+        const has = stack.some((s) => s.attributes.href === href);
         !has && res.push(item);
       });
     };
     find(styles, prevStyles, toAdd);
     find(prevStyles, styles, toRemove);
-    toRemove.forEach(stl => {
+    toRemove.forEach((stl) => {
       const el = head.querySelector(`link[href="${stl.attributes.href}"]`);
       el?.parentNode?.removeChild(el);
     });
     appendVNodes(head, toAdd);
+  }
+
+  renderHead() {
+    const { model, em } = this;
+    const { root } = model;
+    const HeadView = em?.Components?.getType(typeHead)!.view;
+    if (!HeadView) return;
+    this.headView = new HeadView({
+      el: this.getHead(),
+      model: root.head,
+      config: {
+        ...root.config,
+        frameView: this,
+      },
+    }).render();
   }
 
   renderBody() {
@@ -423,6 +442,10 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         pointer-events: none;
       }
 
+      .${ppfx}pointer-init {
+        pointer-events: initial;
+      }
+
       .${ppfx}plh-image {
         background: #f5f5f5;
         border: none;
@@ -450,10 +473,12 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
       ${conf.canvasCss || ''}
       ${conf.protectedCss || ''}
-    </style>`
+    </style>`,
     );
     const { root } = model;
-    const { view } = em.Components.getType('wrapper')!;
+    const { view } = em?.Components?.getType('wrapper') || {};
+
+    if (!view) return;
     this.wrapper = new view({
       model: root,
       config: {
@@ -472,7 +497,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
           ...em.Css.getConfig(),
           frameView: this,
         },
-      }).render().el
+      }).render().el,
     );
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe
@@ -480,8 +505,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
     // Avoid some default behaviours
     //@ts-ignore
-    on(body, 'click', ev => ev && ev.target?.tagName == 'A' && ev.preventDefault());
-    on(body, 'submit', ev => ev && ev.preventDefault());
+    on(body, 'click', (ev) => ev && ev.target?.tagName == 'A' && ev.preventDefault());
+    on(body, 'submit', (ev) => ev && ev.preventDefault());
 
     // When the iframe is focused the event dispatcher is not the same so
     // I need to delegate all events to the parent document
@@ -490,10 +515,10 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       { event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
       { event: 'pointerdown pointermove pointerup', class: 'PointerEvent' },
       { event: 'wheel', class: 'WheelEvent', opts: { passive: !config.infiniteCanvas } },
-    ].forEach(obj =>
-      obj.event.split(' ').forEach(event => {
-        doc.addEventListener(event, ev => this.el.dispatchEvent(createCustomEvent(ev, obj.class)), obj.opts);
-      })
+    ].forEach((obj) =>
+      obj.event.split(' ').forEach((event) => {
+        doc.addEventListener(event, (ev) => this.el.dispatchEvent(createCustomEvent(ev, obj.class)), obj.opts);
+      }),
     );
 
     this._toggleEffects(true);

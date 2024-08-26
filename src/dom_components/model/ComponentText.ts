@@ -1,5 +1,6 @@
 import { isFunction } from 'underscore';
 import Component from './Component';
+import { ComponentOptions, ComponentProperties } from './types';
 
 export default class ComponentText extends Component {
   get defaults() {
@@ -12,8 +13,8 @@ export default class ComponentText extends Component {
     };
   }
 
-  initialize(props: any, opts: any) {
-    super.initialize(props, opts);
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
     this.__checkInnerChilds();
   }
 
@@ -30,7 +31,7 @@ export default class ComponentText extends Component {
       };
 
       if (isFunction(disableTextInnerChilds)) {
-        this.forEachChild(child => {
+        this.forEachChild((child) => {
           disableTextInnerChilds(child) && disableChild(child);
         });
       } else {

@@ -1,5 +1,5 @@
 import { isElement, isUndefined, isString } from 'underscore';
-import { Collection, View } from '../common';
+import { Collection, Debounced, Model, View } from '../common';
 import { EditorConfigKeys } from '../editor/config/config';
 import EditorModel from '../editor/model/Editor';
 import { ProjectData } from '../storage_manager/model/IStorage';
@@ -39,7 +39,10 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   private _em: EditorModel;
   private _config: T & { pStylePrefix?: string };
   private _name: string;
+  debounced: Debounced[] = [];
+  collections: Collection[] = [];
   cls: any[] = [];
+  state?: Model;
   events: any;
   model?: any;
   view?: any;
@@ -67,7 +70,6 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
     return this._config;
   }
 
-  abstract destroy(): void;
   render(opts?: any): HTMLElement | JQuery<HTMLElement> | void {}
   postLoad(key: any): void {}
 
@@ -76,7 +78,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   }
 
   getConfig<P extends keyof T | undefined = undefined, R = P extends keyof T ? T[P] : T>(
-    name?: P
+    name?: P,
   ): R & { pStylePrefix?: string } {
     // @ts-ignore
     return name ? this.config[name] : this.config;
@@ -87,6 +89,21 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   }
 
   postRender?(view: any): void;
+
+  destroy() {
+    this.__destroy();
+  }
+
+  __destroy() {
+    this.view?.remove();
+    this.state?.stopListening();
+    this.state?.clear();
+    this.debounced.forEach((d) => d.cancel());
+    this.collections.forEach((c) => {
+      c.stopListening();
+      c.reset();
+    });
+  }
 
   /**
    * Move the main DOM element of the module.
@@ -105,7 +122,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
 
 export abstract class ItemManagerModule<
   TConf extends ModuleConfig = ModuleConfig,
-  TCollection extends Collection = Collection
+  TCollection extends Collection = Collection,
 > extends Module<TConf> {
   cls: any[] = [];
   protected all: TCollection;
@@ -117,7 +134,7 @@ export abstract class ItemManagerModule<
     all: any,
     events?: any,
     defaults?: TConf,
-    opts: { skipListen?: boolean } = {}
+    opts: { skipListen?: boolean } = {},
   ) {
     super(em, moduleName, defaults);
     this.all = all;
@@ -203,7 +220,7 @@ export abstract class ItemManagerModule<
       entity.on('all', (ev: any, model: any, coll: any, opts: any) => {
         const options = opts || coll;
         const opt = { event: ev, ...options };
-        [em, all].map(md => md.trigger(event, model, opt));
+        [em, all].map((md) => md.trigger(event, model, opt));
       });
     });
   }
@@ -267,7 +284,7 @@ export abstract class ItemManagerModule<
   }
 
   __destroy() {
-    this.cls.forEach(coll => {
+    this.cls.forEach((coll) => {
       coll.stopListening();
       coll.reset();
     });

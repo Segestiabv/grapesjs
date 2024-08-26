@@ -7,9 +7,11 @@ export type Debounced = Function & { cancel(): void };
 
 export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
 
-export type AddOptions = Backbone.AddOptions & { temporary?: boolean };
+export type AddOptions = Backbone.AddOptions & { temporary?: boolean; action?: string };
 
 export type DisableOptions = { fromMove?: boolean };
+
+export type LocaleOptions = { locale?: boolean };
 
 export type RemoveOptions = Backbone.Silenceable;
 
@@ -22,6 +24,13 @@ export type ObjectAny = Record<string, any>;
 export type ObjectStrings = Record<string, string>;
 
 export type Nullable = undefined | null | false;
+
+export interface OptionAsDocument {
+  /**
+   * Treat the HTML string as document (option valid on the root component, eg. will include doctype, html, head, etc.).
+   */
+  asDocument?: boolean;
+}
 
 // https://github.com/microsoft/TypeScript/issues/29729#issuecomment-1483854699
 export type LiteralUnion<T, U> = T | (U & NOOP);
@@ -52,7 +61,7 @@ export type ElementRect = {
 
 export type CombinedModelConstructorOptions<
   E,
-  M extends Model<any, any, E> = Model
+  M extends Model<any, any, E> = Model,
 > = Backbone.ModelConstructorOptions<M> & E;
 
 export interface ViewOptions<TModel extends Model | undefined = Model, TElement extends Element = HTMLElement>

@@ -45,6 +45,7 @@ describe('StyleManager properties logic', () => {
     beforeEach(() => {
       rule1 = cssc.addRules('.cls { color: red; }')[0];
       obj.addSector(sectorTest, {
+        name: 'sector',
         properties: [
           {
             extend: propTest,
@@ -86,7 +87,7 @@ describe('StyleManager properties logic', () => {
         [propBTestId, '2px'],
         [propCTestId, '3px'],
         [propDTestId, '4px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         expect(compTypeProp.getProperty(item[0])?.getFullValue()).toBe(item[1]);
       });
     });
@@ -125,7 +126,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, '2px'],
         [propCTest, '3px'],
         [propDTest, '4px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         expect(compTypeProp.getProperty(item[0])?.getFullValue()).toBe(item[1]);
       });
       compTypeProp.upValue('11px');
@@ -134,7 +135,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, '11px'],
         [propCTest, '11px'],
         [propDTest, '11px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         expect(compTypeProp.getProperty(item[0])?.getFullValue()).toBe(item[1]);
       });
       obj.__upSel();
@@ -151,7 +152,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, ''],
         [propCTest, ''],
         [propDTest, ''],
-      ].forEach(item => {
+      ].forEach((item) => {
         expect(compTypeProp.getProperty(item[0])?.getFullValue()).toBe(item[1]);
       });
     });
@@ -164,8 +165,8 @@ describe('StyleManager properties logic', () => {
             [propCTest]: '33px',
             [propBTest]: '22%',
           },
-          { byName: true }
-        )
+          { byName: true },
+        ),
       ).toEqual({
         [propATest]: '1px',
         [propBTest]: '22%',
@@ -181,8 +182,8 @@ describe('StyleManager properties logic', () => {
             [propCTest]: '33px',
             [propBTest]: '22%',
           },
-          { byName: true }
-        )
+          { byName: true },
+        ),
       ).toEqual({
         [propATest]: '111px',
         [propBTest]: '22%',
@@ -197,8 +198,8 @@ describe('StyleManager properties logic', () => {
             color: 'red',
             [propCTest]: '33px',
           },
-          { byName: true }
-        )
+          { byName: true },
+        ),
       ).toEqual({
         [propATest]: '',
         [propBTest]: '',
@@ -221,7 +222,7 @@ describe('StyleManager properties logic', () => {
       expect(
         compTypeProp.__getPropsFromStyle({
           [propTest]: 'rgba(valueA 1) rgba(value B)',
-        })
+        }),
       ).toEqual({
         [propATest]: 'rgba(valueA 1)',
         [propBTest]: 'rgba(value B)',
@@ -292,7 +293,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, '22px'],
         [propCTest, '11px'],
         [propDTest, '44px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.hasValue()).toBe(true);
         expect(prop.hasValue({ noParent: true })).toBe(false);
@@ -318,7 +319,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, '22px'],
         [propCTest, '11px'],
         [propDTest, '44px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.getFullValue()).toBe(item[1]);
       });
@@ -332,7 +333,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, ''],
         [propCTest, ''],
         [propDTest, ''],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.hasValue()).toBe(false);
         expect(prop.getFullValue()).toBe(item[1]);
@@ -355,7 +356,7 @@ describe('StyleManager properties logic', () => {
         [propATest, '1px'],
         [propBTest, '2px'],
         [propCTest, '1px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.hasValue({ noParent: true })).toBe(false);
         expect(prop.getFullValue()).toBe(item[1]);
@@ -377,7 +378,7 @@ describe('StyleManager properties logic', () => {
       [
         [propBTest, '2px'],
         [propCTest, '1px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.hasValue({ noParent: true })).toBe(false);
         expect(prop.getFullValue()).toBe(item[1]);
@@ -387,7 +388,7 @@ describe('StyleManager properties logic', () => {
     test('getStyleFromProps with custom toStyle', () => {
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
       obj.__upSel();
-      compTypeProp.set('toStyle', values => {
+      compTypeProp.set('toStyle', (values) => {
         return {
           [propTest]: `rgba(${values[propATestId]}, ${values[propBTestId]}, ${values[propDTestId]})`,
         };
@@ -411,7 +412,7 @@ describe('StyleManager properties logic', () => {
         [propBTest, '2px'],
         [propCTest, '50%'],
         [propDTest, '4px'],
-      ].forEach(item => {
+      ].forEach((item) => {
         const prop = compTypeProp.getProperty(item[0])!;
         expect(prop.getFullValue()).toBe(item[1]);
       });
@@ -431,11 +432,11 @@ describe('StyleManager properties logic', () => {
     test('Updating inner property, it reflects on the rule', () => {
       compTypePropInn.upValue('55%');
       const style = rule1.getStyle();
-      const otherProps = Object.keys(style).filter(p => p.indexOf('padding') >= 0 && p !== propATest);
+      const otherProps = Object.keys(style).filter((p) => p.indexOf('padding') >= 0 && p !== propATest);
       expect(style[propATest]).toBe('55%');
       expect(compTypeProp.hasValue()).toBe(true);
       expect(compTypePropInn.hasValue()).toBe(true);
-      otherProps.forEach(prop => {
+      otherProps.forEach((prop) => {
         expect(style[prop]).toBe('');
         if (prop !== propTest) {
           expect(compTypeProp.getProperty(prop)?.hasValue()).toBe(false);
@@ -463,12 +464,13 @@ describe('StyleManager properties logic', () => {
         }
       `)[0];
       obj.addSector(sectorTest, {
+        name: 'My sector',
         properties: [
           {
             type: 'stack',
             property: propTest,
-            // @ts-ignore
-            properties: propsTest.map(property => ({ property })),
+            emptyValue: '',
+            properties: propsTest.map((property) => ({ property })),
           },
         ],
       });
@@ -502,7 +504,7 @@ describe('StyleManager properties logic', () => {
           [propTest]: 'valueA-1 valueB-1 valueC-1, valueA-2 valueB-2 valueC-2',
           [propCTest]: 'valueC-1-ext, valueC-2-ext, valueC-3-ext',
           [propBTest]: 'valueB-1-ext',
-        })
+        }),
       ).toEqual([
         {
           [propATest]: 'valueA-1',
@@ -528,12 +530,12 @@ describe('StyleManager properties logic', () => {
     test('Custom fromStyle', () => {
       compTypeProp.set('fromStyle', (style, { separatorLayers }) => {
         const layerValues = (style[propTest] as string).split(separatorLayers);
-        return layerValues.map(value => ({ value }));
+        return layerValues.map((value) => ({ value }));
       });
       expect(
         compTypeProp.__getLayersFromStyle({
           [propTest]: 'rgba(valueA-1, valueB-1), rgba(valueA-2, valueB-2)',
-        })
+        }),
       ).toEqual([
         {
           value: 'rgba(valueA-1, valueB-1)',
@@ -564,7 +566,7 @@ describe('StyleManager properties logic', () => {
     });
 
     test('Custom toStyle', () => {
-      compTypeProp.set('toStyle', values => {
+      compTypeProp.set('toStyle', (values) => {
         return {
           [propTest]: `rgba(${values[propATest]}, ${values[propBTest]}, ${values[propCTest]})`,
         };
@@ -689,7 +691,7 @@ describe('StyleManager properties logic', () => {
           [propBTest]: 'valueB-new',
           [propCTest]: 'valueC-new',
         },
-        { at: 0 }
+        { at: 0 },
       );
       expect(rule1.getStyle()).toEqual({
         [propTest]: 'valueA-new valueB-new valueC-new, valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext',
@@ -704,7 +706,7 @@ describe('StyleManager properties logic', () => {
           [propBTest]: 'valueB-new BB',
           [propCTest]: 'valueC-new CC',
         },
-        { at: 0 }
+        { at: 0 },
       );
       obj.__upSel();
       expect(rule1.getStyle()).toEqual({
@@ -730,6 +732,62 @@ describe('StyleManager properties logic', () => {
         [propATest]: 'valueA-2',
         [propBTest]: 'valueB-2',
         [propCTest]: 'valueC-2-ext',
+      });
+    });
+
+    describe('emptyValue', () => {
+      test('Removing all layers with empty value as string', () => {
+        compTypeProp.set('emptyValue', 'unset');
+        compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        const res = { [propTest]: 'unset' };
+        expect(compTypeProp.isEmptyValueStyle(res)).toBe(true);
+        expect(compTypeProp.isEmptyValueStyle({})).toBe(false);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual(res);
+      });
+
+      test('Removing all layers with empty value as string (detached)', () => {
+        compTypeProp.set('emptyValue', 'unset'), compTypeProp.set('detached', true);
+        compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset',
+          [propBTest]: 'unset',
+          [propCTest]: 'unset',
+        });
+      });
+
+      test('Removing all layers with empty value as function', () => {
+        compTypeProp.set('emptyValue', () => ({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+        })),
+          compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+        });
+      });
+
+      test('Removing all layers with empty value as function (detached)', () => {
+        compTypeProp.set('detached', true);
+        compTypeProp.set('emptyValue', () => ({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+          [propCTest]: 'unset-c',
+        })),
+          compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+          [propCTest]: 'unset-c',
+        });
       });
     });
   });

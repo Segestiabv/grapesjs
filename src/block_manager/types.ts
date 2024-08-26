@@ -1,3 +1,8 @@
+import { ItemsByCategory } from '../abstract/ModuleCategory';
+import Block from './model/Block';
+
+export interface BlocksByCategory extends ItemsByCategory<Block> {}
+
 /**{START_EVENTS}*/
 export enum BlocksEvents {
   /**
@@ -48,6 +53,13 @@ export enum BlocksEvents {
    * editor.on('block:drag:stop', (component, block) => { ... });
    */
   dragEnd = 'block:drag:stop',
+
+  /**
+   * @event `block:category:update` Block category updated.
+   * @example
+   * editor.on('block:category:update', ({ category, changes }) => { ... });
+   */
+  categoryUpdate = 'block:category:update',
 
   /**
    * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).

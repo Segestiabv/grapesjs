@@ -9,29 +9,30 @@ describe('ParserHtml', () => {
 
   beforeEach(() => {
     const em = new Editor({});
-    var dom = new DomComponents(em);
+    const dom = new DomComponents(em);
     obj = ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
+      textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
     });
-    obj.compTypes = dom.componentTypes as any;
+    obj.compTypes = dom.componentTypes;
   });
 
   test('Simple div node', () => {
-    var str = '<div></div>';
-    var result = [{ tagName: 'div' }];
+    const str = '<div></div>';
+    const result = [{ tagName: 'div' }];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Simple article node', () => {
-    var str = '<article></article>';
-    var result = [{ tagName: 'article' }];
+    const str = '<article></article>';
+    const result = [{ tagName: 'article' }];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Node with attributes', () => {
-    var str = '<div id="test1" class="test2 test3" data-one="test4" strange="test5"></div>';
-    var result = [
+    const str = '<div id="test1" class="test2 test3" data-one="test4" strange="test5"></div>';
+    const result = [
       {
         tagName: 'div',
         classes: ['test2', 'test3'],
@@ -46,8 +47,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse style string to object', () => {
-    var str = 'color:black; width:100px; test:value;';
-    var result = {
+    const str = 'color:black; width:100px; test:value;';
+    const result = {
       color: 'black',
       width: '100px',
       test: 'value',
@@ -56,8 +57,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse style string with values containing colon to object', () => {
-    var str = 'background-image:url("https://some-website.ex"); test:value;';
-    var result = {
+    const str = 'background-image:url("https://some-website.ex"); test:value;';
+    const result = {
       'background-image': 'url("https://some-website.ex")',
       test: 'value',
     };
@@ -75,20 +76,20 @@ describe('ParserHtml', () => {
   });
 
   test('Parse class string to array', () => {
-    var str = 'test1 test2    test3 test-4';
-    var result = ['test1', 'test2', 'test3', 'test-4'];
+    const str = 'test1 test2    test3 test-4';
+    const result = ['test1', 'test2', 'test3', 'test-4'];
     expect(obj.parseClass(str)).toEqual(result);
   });
 
   test('Parse class string to array with special classes', () => {
-    var str = 'test1 test2    test3 test-4 gjs-test';
-    var result = ['test1', 'test2', 'test3', 'test-4', 'gjs-test'];
+    const str = 'test1 test2    test3 test-4 gjs-test';
+    const result = ['test1', 'test2', 'test3', 'test-4', 'gjs-test'];
     expect(obj.parseClass(str)).toEqual(result);
   });
 
   test('Style attribute is isolated', () => {
-    var str = '<div id="test1" style="color:black; width:100px; test:value;"></div>';
-    var result = [
+    const str = '<div id="test1" style="color:black; width:100px; test:value;"></div>';
+    const result = [
       {
         tagName: 'div',
         attributes: { id: 'test1' },
@@ -103,8 +104,8 @@ describe('ParserHtml', () => {
   });
 
   test('Class attribute is isolated', () => {
-    var str = '<div id="test1" class="test2 test3 test4"></div>';
-    var result = [
+    const str = '<div id="test1" class="test2 test3 test4"></div>';
+    const result = [
       {
         tagName: 'div',
         attributes: { id: 'test1' },
@@ -115,8 +116,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse images nodes', () => {
-    var str = '<img id="test1" src="./index.html"/>';
-    var result = [
+    const str = '<img id="test1" src="./index.html"/>';
+    const result = [
       {
         tagName: 'img',
         type: 'image',
@@ -130,8 +131,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse text nodes', () => {
-    var str = '<div id="test1">test2 </div>';
-    var result = [
+    const str = '<div id="test1">test2 </div>';
+    const result = [
       {
         tagName: 'div',
         attributes: { id: 'test1' },
@@ -143,8 +144,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse text with few text tags', () => {
-    var str = '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
-    var result = [
+    const str = '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
+    const result = [
       {
         tagName: 'div',
         attributes: { id: 'test1' },
@@ -199,8 +200,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse text with few text tags and nested node', () => {
-    var str = '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
-    var result = [
+    const str = '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
+    const result = [
       {
         tagName: 'div',
         attributes: { id: 'test1' },
@@ -267,10 +268,40 @@ describe('ParserHtml', () => {
     expect(obj.parse(str).html).toEqual(result);
   });
 
+  test('Parse text with few text tags and comment', () => {
+    const str = '<div id="test1">Some text <br/><!-- comment --><b>Bold</b></div>';
+    const result = [
+      {
+        tagName: 'div',
+        attributes: { id: 'test1' },
+        type: 'text',
+        components: [
+          {
+            content: 'Some text ',
+            type: 'textnode',
+            tagName: '',
+          },
+          { tagName: 'br' },
+          {
+            content: ' comment ',
+            type: 'comment',
+            tagName: '',
+          },
+          {
+            components: { type: 'textnode', content: 'Bold' },
+            type: 'text',
+            tagName: 'b',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
   test('Parse nested nodes', () => {
-    var str =
+    const str =
       '<article id="test1">   <div></div> <footer id="test2"></footer>  Text mid <div id="last"></div></article>';
-    var result = [
+    const result = [
       {
         tagName: 'article',
         attributes: { id: 'test1' },
@@ -303,8 +334,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse nested text nodes', () => {
-    var str = '<div>content1 <div>nested</div> content2</div>';
-    var result = [
+    const str = '<div>content1 <div>nested</div> content2</div>';
+    const result = [
       {
         tagName: 'div',
         type: 'text',
@@ -331,8 +362,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse nested span text nodes', () => {
-    var str = '<div>content1 <div><span>nested</span></div> content2</div>';
-    var result = [
+    const str = '<div>content1 <div><span>nested</span></div> content2</div>';
+    const result = [
       {
         tagName: 'div',
         components: [
@@ -363,21 +394,21 @@ describe('ParserHtml', () => {
   });
 
   test('Parse multiple nodes', () => {
-    var str = '<div></div><div></div>';
-    var result = [{ tagName: 'div' }, { tagName: 'div' }];
+    const str = '<div></div><div></div>';
+    const result = [{ tagName: 'div' }, { tagName: 'div' }];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Remove script tags', () => {
-    var str = '<div><script>var test;</script></div><div></div><script>var test2;</script>';
-    var result = [{ tagName: 'div' }, { tagName: 'div' }];
+    const str = '<div><script>const test;</script></div><div></div><script>const test2;</script>';
+    const result = [{ tagName: 'div' }, { tagName: 'div' }];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Isolate styles', () => {
-    var str = '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
-    var resHtml = [{ tagName: 'div' }, { tagName: 'div' }];
-    var resCss = [
+    const str = '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
+    const resHtml = [{ tagName: 'div' }, { tagName: 'div' }];
+    const resCss = [
       {
         selectors: ['a'],
         style: { color: 'red' },
@@ -387,7 +418,7 @@ describe('ParserHtml', () => {
         style: { color: 'blue' },
       },
     ];
-    var res = obj.parse(str, ParserCss());
+    const res = obj.parse(str, ParserCss());
     expect(res.html).toEqual(resHtml);
     expect(res.css).toEqual(resCss);
   });
@@ -435,8 +466,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse nested div with text and spaces', () => {
-    var str = '<div> <p>TestText</p> </div>';
-    var result = [
+    const str = '<div> <p>TestText</p> </div>';
+    const result = [
       {
         tagName: 'div',
         type: 'text',
@@ -462,10 +493,67 @@ describe('ParserHtml', () => {
     expect(obj.parse(str).html).toEqual(result);
   });
 
+  test('Cleanup useless empty whitespaces', () => {
+    const str = `<div>
+      <p>TestText</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'TestText' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('Keep meaningful whitespaces', () => {
+    const str = `<div>
+      <p>A</p> <p>B</p>   <p>C</p>&nbsp;<p>D</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        type: 'text',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'A' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'B' },
+            type: 'text',
+          },
+          { type: 'textnode', content: '   ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'C' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'D' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
   test('Parse node with model attributes to fetch', () => {
-    var str =
+    const str =
       '<div id="test1" data-test="test-value" data-gjs-draggable=".myselector" data-gjs-stuff="test">test2 </div>';
-    var result = [
+    const result = [
       {
         tagName: 'div',
         draggable: '.myselector',
@@ -482,8 +570,8 @@ describe('ParserHtml', () => {
   });
 
   test('Parse model attributes with true and false', () => {
-    var str = '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
-    var result = [
+    const str = '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
+    const result = [
       {
         tagName: 'div',
         draggable: true,
@@ -500,11 +588,10 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with object inside', () => {
-    var str = '<div data-gjs-test=\'{ "prop1": "value1", "prop2": 10, "prop3": true}\'>test2 </div>';
-    var result = [
+    const str = '<div data-gjs-test=\'{ "prop1": "value1", "prop2": 10, "prop3": true}\'>test2 </div>';
+    const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: {
           prop1: 'value1',
@@ -518,11 +605,10 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with arrays inside', () => {
-    var str = '<div data-gjs-test=\'["value1", "value2"]\'>test2 </div>';
-    var result = [
+    const str = '<div data-gjs-test=\'["value1", "value2"]\'>test2 </div>';
+    const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
         components: { type: 'textnode', content: 'test2 ' },
@@ -568,5 +654,152 @@ describe('ParserHtml', () => {
       },
     ];
     expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('<template> with content is properly parsed', () => {
+    const str = `<template class="test">
+      <tr>
+        <td>Cell</td>
+      </tr>
+    </template>`;
+    const result = [
+      {
+        tagName: 'template',
+        classes: ['test'],
+        components: [
+          {
+            type: 'row',
+            tagName: 'tr',
+            components: [
+              {
+                type: 'cell',
+                tagName: 'td',
+                components: { type: 'textnode', content: 'Cell' },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  describe('Options', () => {
+    test('Remove unsafe attributes', () => {
+      const str = '<img src="path/img" data-test="1" class="test" onload="unsafe"/>';
+      const result = {
+        type: 'image',
+        tagName: 'img',
+        classes: ['test'],
+        attributes: {
+          src: 'path/img',
+          'data-test': '1',
+        },
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttr: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            ...result.attributes,
+            onload: 'unsafe',
+          },
+        },
+      ]);
+    });
+
+    test('Remove unsafe attribute values', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttrValue: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            src: 'javascript:alert(1)',
+          },
+        },
+      ]);
+    });
+
+    test('Custom preParser option', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+        attributes: {
+          src: 'test:alert(1)',
+        },
+      };
+      const preParser = (str: string) => str.replace('javascript:', 'test:');
+      expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
+    });
+
+    test('parsing as document', () => {
+      const str = `
+        <!DOCTYPE html>
+        <html class="cls-html" lang="en" data-gjs-htmlp="true">
+          <head class="cls-head" data-gjs-headp="true">
+            <meta charset="utf-8">
+            <title>Test</title>
+            <link rel="stylesheet" href="/noop.css">
+            <!-- comment -->
+            <script src="/noop.js"></script>
+            <style>.test { color: red }</style>
+          </head>
+          <body class="cls-body" data-gjs-bodyp="true">
+            <h1>H1</h1>
+          </body>
+        </html>
+      `;
+
+      expect(obj.parse(str, null, { asDocument: true })).toEqual({
+        doctype: '<!DOCTYPE html>',
+        root: { classes: ['cls-html'], attributes: { lang: 'en' }, htmlp: true },
+        head: {
+          type: 'head',
+          tagName: 'head',
+          headp: true,
+          classes: ['cls-head'],
+          components: [
+            { tagName: 'meta', attributes: { charset: 'utf-8' } },
+            {
+              tagName: 'title',
+              type: 'text',
+              components: { type: 'textnode', content: 'Test' },
+            },
+            {
+              tagName: 'link',
+              attributes: { rel: 'stylesheet', href: '/noop.css' },
+            },
+            {
+              type: 'comment',
+              tagName: '',
+              content: ' comment ',
+            },
+            {
+              tagName: 'style',
+              type: 'text',
+              components: { type: 'textnode', content: '.test { color: red }' },
+            },
+          ],
+        },
+        html: {
+          tagName: 'body',
+          bodyp: true,
+          classes: ['cls-body'],
+          components: [
+            {
+              tagName: 'h1',
+              type: 'text',
+              components: { type: 'textnode', content: 'H1' },
+            },
+          ],
+        },
+      });
+    });
   });
 });

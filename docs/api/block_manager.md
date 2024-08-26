@@ -66,7 +66,13 @@ editor.on('block:drag', (block) => { ... });
 editor.on('block:drag:stop', (component, block) => { ... });
 ```
 
-* `block:custom` Event to use in case of [custom Block Manager UI]\(https://grapesjs.com/docs/modules/Blocks.html#customization).
+* `block:category:update` Block category updated.
+
+```javascript
+editor.on('block:category:update', ({ category, changes }) => { ... });
+```
+
+* `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
 
 ```javascript
 editor.on('block:custom', ({ container, blocks, ... }) => { ... });
@@ -190,6 +196,30 @@ Returns currently dragging block.
 Updated when the drag starts and cleared once it's done.
 
 Returns **([Block] | [undefined][6])** 
+
+## getBlocksByCategory
+
+Get blocks by category.
+
+### Parameters
+
+*   `blocks` **[Array][4]\<Block>?** 
+
+### Examples
+
+```javascript
+blockManager.getBlocksByCategory();
+// Returns an array of items of this type
+// > { category?: Category; items: Block[] }
+
+// NOTE: The item without category is the one containing blocks without category.
+
+// You can also get the same output format by passing your own array of Blocks
+const myFilteredBlocks: Block[] = [...];
+blockManager.getBlocksByCategorymyFilteredBlocks
+```
+
+Returns **[Array][4]\<BlocksByCategory>** 
 
 ## render
 

@@ -1,4 +1,4 @@
-import { each, isEmpty, keys, result } from 'underscore';
+import { each, isBoolean, isEmpty, keys, result } from 'underscore';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import FrameView from '../../canvas/view/FrameView';
 import { DisableOptions, ExtractMethods, ObjectAny, View } from '../../common';
@@ -147,7 +147,7 @@ TComp> {
     const { model, $el } = this;
     const { views } = model;
     const frame = this.frameView || {};
-    model.components().forEach(comp => {
+    model.components().forEach((comp) => {
       const view = comp.getView(frame.model);
       view?.remove();
     });
@@ -220,7 +220,7 @@ TComp> {
   importClasses() {
     const { em, model } = this;
     const sm = em.Selectors;
-    sm && model.classes.forEach(s => sm.add(s.getName()));
+    sm && model.classes.forEach((s) => sm.add(s.getName()));
   }
 
   /**
@@ -238,6 +238,7 @@ TComp> {
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
     const noPointerCls = `${ppfx}no-pointer`;
+    const pointerInitCls = `${ppfx}pointer-init`;
     const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
     const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
@@ -265,7 +266,9 @@ TComp> {
         break;
     }
 
-    model.get('locked') && cls.push(noPointerCls);
+    if (isBoolean(model.locked)) {
+      cls.push(model.locked ? noPointerCls : pointerInitCls);
+    }
 
     const clsStr = cls.filter(Boolean).join(' ');
     clsStr && el.setAttribute('class', clsStr);
@@ -290,8 +293,9 @@ TComp> {
     const { model, em } = this;
 
     if (avoidInline(em) && !opts.inline) {
+      // Move inline styles to CSSRule
       const styleOpts = this.__cmpStyleOpts;
-      const style = model.getStyle(styleOpts);
+      const style = model.getStyle({ inline: true, ...styleOpts });
       !isEmpty(style) && model.setStyle(style, styleOpts);
     } else {
       this.setAttribute('style', model.styleToString(opts));
@@ -349,8 +353,8 @@ TComp> {
     };
 
     // Remove all current attributes
-    each(el.attributes, attr => attrs.push(attr.nodeName));
-    attrs.forEach(attr => $el.removeAttr(attr));
+    each(el.attributes, (attr) => attrs.push(attr.nodeName));
+    attrs.forEach((attr) => $el.removeAttr(attr));
     this.updateStyle();
     this.updateHighlight();
     const attr = {
@@ -359,7 +363,7 @@ TComp> {
     };
 
     // Remove all `false` attributes
-    keys(attr).forEach(key => attr[key] === false && delete attr[key]);
+    keys(attr).forEach((key) => attr[key] === false && delete attr[key]);
 
     $el.attr(attr);
   }
