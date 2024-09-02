@@ -77,16 +77,14 @@ const config: PanelsConfig = {
     {
       id: 'views',
       buttons: [
-        /*
         {
           id: osm,
           className: 'fa fa-paint-brush',
-          command: osm,
+          command: 'open-sm',
           active: true,
           togglable: false,
           attributes: { title: 'Open Style Manager' },
         },
-        */
         {
           id: otm,
           className: 'fa fa-cog',
