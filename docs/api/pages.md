@@ -70,7 +70,7 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][1]<[Page]>** 
+Returns **[Array][1]<[Page]>**&#x20;
 
 ## add
 
@@ -91,7 +91,7 @@ const newPage = pageManager.add({
 });
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## remove
 
@@ -113,6 +113,32 @@ pageManager.remove(somePage);
 
 Returns **[Page]** Removed Page
 
+## move
+
+Move a page to a specific index in the pages collection.
+If the index is out of bounds, the page will not be moved.
+
+### Parameters
+
+*   `page` **([string][3] | [Page])** Page or page id to move.
+*   `opts` **[Object][2]?** Move options (optional, default `{}`)
+
+    *   `opts.at` **[number][4]?** The target index where the page should be moved.
+
+### Examples
+
+```javascript
+// Move a page to index 2
+const movedPage = pageManager.move('page-id', { at: 2 });
+if (movedPage) {
+  console.log('Page moved successfully:', movedPage);
+} else {
+  console.log('Page could not be moved.');
+}
+```
+
+Returns **(Page | [undefined][5])** The moved page, or `undefined` if the page does not exist or the index is out of bounds.
+
 ## get
 
 Get page by id
@@ -127,7 +153,7 @@ Get page by id
 const somePage = pageManager.get('page-id');
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## getMain
 
@@ -139,7 +165,7 @@ Get main page (the first one available)
 const mainPage = pageManager.getMain();
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## getAllWrappers
 
@@ -153,7 +179,7 @@ const wrappers = pageManager.getAllWrappers();
 const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
 ```
 
-Returns **[Array][1]<[Component]>** 
+Returns **[Array][1]<[Component]>**&#x20;
 
 ## select
 
@@ -173,7 +199,7 @@ const somePage = pageManager.get('page-id');
 pageManager.select(somePage);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## getSelected
 
@@ -185,10 +211,14 @@ Get the selected page
 const selectedPage = pageManager.getSelected();
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

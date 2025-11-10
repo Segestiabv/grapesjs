@@ -10,6 +10,12 @@ meta:
 
 This is a step-by-step guide for anyone who wants to create their own builder with GrapesJS. This is not a comprehensive guide, just a concise overview of the most common modules. Follow along to create a page builder from scratch. Skip to the end of this page to see the [final result](#final-result).
 
+::: tip
+
+Looking for a customizable version of GrapesJS with an embeddable, production-ready UI? [Explore the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/overview/getting-started) 
+
+:::
+
 ## Import the library
 
 Before you start using GrapesJS, you'll have to import it. Let's import the latest version:
@@ -37,9 +43,9 @@ import grapesjs from 'grapesjs';
 The first step is to define the interface of our editor. For this purpose we gonna start with basic HTML layouts. Finding a common structure for the UI of any project is not an easy task. That's why GrapesJS prefers to keep this process as simple as possible. We provide a few helpers, but let the user define the interface. This guarantees maximum flexibility.
 The main part of the GrapesJS editor is the canvas, this is where you create the structure of your templates and you can't miss it. Let's try to initiate the editor with the canvas and no panels.
 
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.html
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.js
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.css
+<<< @/.vuepress/components/demos/DemoCanvasOnly.html
+<<< @/.vuepress/components/demos/DemoCanvasOnly.js
+<<< @/.vuepress/components/demos/DemoCanvasOnly.css
 <Demo>
 <DemoCanvasOnly/>
 </Demo>
@@ -277,7 +283,7 @@ Another utility tool you might find useful when working with web elements is the
 <div id="blocks"></div>
 ```
 
-<<< @/docs/.vuepress/components/demos/DemoLayers.css
+<<< @/.vuepress/components/demos/DemoLayers.css
 
 ```js
 const editor = grapesjs.init({

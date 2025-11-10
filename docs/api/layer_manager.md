@@ -13,16 +13,30 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
 
 ```js
 const layers = editor.Layers;
 ```
 
 ## Available Events
+* `layer:root` Root layer changed. The new root component is passed as an argument to the callback.
 
-*   `layer:root` - Root layer changed. The new root component is passed as an argument to the callback.
-*   `layer:component` - Component layer is updated. The updated component is passed as an argument to the callback.
+```javascript
+editor.on('layer:root', (component) => { ... });
+```
+
+* `layer:component` Component layer is updated. The updated component is passed as an argument to the callback.
+
+```javascript
+editor.on('layer:component', (component, opts) => { ... });
+```
+
+* `layer:custom` Custom layer event. Object with container and root is passed as an argument to the callback.
+
+```javascript
+editor.on('layer:custom', ({ container, root }) => { ... });
+```
 
 ## Methods
 
@@ -58,7 +72,7 @@ const component = editor.getSelected();
 layers.setRoot(component);
 ```
 
-Returns **[Component]** 
+Returns **[Component]**&#x20;
 
 ## getRoot
 
@@ -70,7 +84,7 @@ Get the current root layer.
 const layerRoot = layers.getRoot();
 ```
 
-Returns **[Component]** 
+Returns **[Component]**&#x20;
 
 ## getComponents
 
@@ -88,7 +102,7 @@ const components = layers.getComponents(component);
 console.log(components);
 ```
 
-Returns **[Array][14]<[Component]>** 
+Returns **[Array][14]<[Component]>**&#x20;
 
 ## setOpen
 
@@ -97,7 +111,7 @@ Update the layer open state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][15]** 
+*   `value` **[Boolean][15]**&#x20;
 
 ## isOpen
 
@@ -105,9 +119,9 @@ Check the layer open state of the component.
 
 ### Parameters
 
-*   `component` **[Component]** 
+*   `component` **[Component]**&#x20;
 
-Returns **[Boolean][15]** 
+Returns **[Boolean][15]**&#x20;
 
 ## setVisible
 
@@ -116,7 +130,7 @@ Update the layer visibility state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][15]** 
+*   `value` **[Boolean][15]**&#x20;
 
 ## isVisible
 
@@ -124,9 +138,9 @@ Check the layer visibility state of the component.
 
 ### Parameters
 
-*   `component` **[Component]** 
+*   `component` **[Component]**&#x20;
 
-Returns **[Boolean][15]** 
+Returns **[Boolean][15]**&#x20;
 
 ## setLocked
 
@@ -135,7 +149,7 @@ Update the layer locked state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][15]** 
+*   `value` **[Boolean][15]**&#x20;
 
 ## isLocked
 
@@ -143,9 +157,9 @@ Check the layer locked state of the component.
 
 ### Parameters
 
-*   `component` **[Component]** 
+*   `component` **[Component]**&#x20;
 
-Returns **[Boolean][15]** 
+Returns **[Boolean][15]**&#x20;
 
 ## setName
 
@@ -162,7 +176,7 @@ Get the layer name of the component.
 
 ### Parameters
 
-*   `component` **[Component]** 
+*   `component` **[Component]**&#x20;
 
 Returns **[String][13]** Component layer name
 
