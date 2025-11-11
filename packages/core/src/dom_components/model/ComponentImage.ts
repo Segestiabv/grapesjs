@@ -18,7 +18,7 @@ export default class ComponentImage extends Component {
       droppable: 0,
       editable: 1,
       highlightable: 0,
-      resizable: { ratioDefault: 1 },
+      resizable: false,
       traits: ['alt'],
 
       src: `<svg ${svgAttrs}>
